@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>todoList</title>
+
+    <link rel="stylesheet" href = "style.css">
+    <script defer src="script.js"></script>
+</head>
+<body>
+    <div class = "generalFlexItem" id = "listSide">
+        <div id = "signature">
+            <h2>school</h2>
+            <button id = "addNewList" onclick = "addNewList()">+</button>
+            <button id = "deleteList" onclick = "deleteList()">-</button>
+            <button id = "previousList" onclick = "previousList()"><</button>
+            <button id = "nextList" onclick = "nextList()">></button>
+        </div>
+        <div id = "taskArea"></div>
+        <div id = "inputArea">
+            <input type="text" id="todoInput" placeholder="new todo...">
+            <input type="text" id = "deadlineInput" placeholder="deadline..?">
+            <button id="addTodo" onclick = "addTodo()">^</button>
+        </div>
+    </div>
+    <div class = "generalFlexItem" id = "motivation">
+        <button onclick = "motivateMe()">motivation</button>
+    </div>
+</body>
+</html>
