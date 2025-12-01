@@ -2,6 +2,8 @@ let signature = document.getElementById("signature");
 let currentList = document.getElementById("schoolList");
 let lists = [document.getElementById("schoolList"), document.getElementById("dailyNecessitiesList")];
 let currListIndex = 0;
+//need a more scalable way to do this, use one h2 and one array to store the names of the lists
+//js need a funciton to showList by just getting the list and putting in <ul>
 
 //add the customizability of the name later
 function addNewList(){
