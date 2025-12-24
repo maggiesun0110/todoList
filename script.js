@@ -1,3 +1,13 @@
+/*
+==== TODO ====
+- add delete func
+- add edit func
+- add deadline functionality
+- add priority symbol
+- add motivation functionality
+*/
+
+
 let listH2 = document.getElementById("listName");
 let taskArea = document.getElementById("taskArea");
 
@@ -27,7 +37,6 @@ window.addNewList = function(){
 
     lists.push({name: name, todos: []});
 
-    //currListIndex = lists.length-1;
     showList();
 }
 
@@ -57,32 +66,43 @@ function showList(){
 
     todos.forEach((todo) => {
         const li = document.createElement("li");
-        const checkbox = document.createElement("input");
         const span = document.createElement("span");
-
-        checkbox.type = "checkbox";
-        checkbox.checked = todo.done;
-
-        checkbox.addEventListener("change", () => {
-            todo.done = checkbox.checked;
-            showList();
-        });
-
+        const priority = document.createElement("badge");
+        const deadlineSpan = document.createElement("p");
+        
+        deadlineSpan.textContent = todo.deadline;
+        //do priority based on date later and style later
+        priority.textContent = "⚠︎";
         span.textContent = todo.text;
-        if(todo.done){
-            span.style.textDecoration = "line-through";
-        }
 
-        li.appendChild(checkbox);
         li.appendChild(span);
+        li.appendChild(priority);
+        li.appendChild(deadlineSpan);
         taskArea.appendChild(li);
     })
 }
 
 window.addTodo = function(){
+    let todoInput = document.getElementById("todoInput");
+    let deadlineInput = document.getElementById("deadlineInput");
+    const text = todoInput.value.trim();
+    const deadline = deadlineInput.value.trim();
 
+    if(text === "") return;
+
+    lists[currListIndex].todos.push({text: text, done: false, deadline: deadline});
+    deadlineInput.value = "";
+    todoInput.value = "";
+    showList();
 }
 
 window.motivateMe = function(){
 
 }
+
+window.addEventListener("keydown", function(e){
+    if(e.key === "Enter" && (document.activeElement.id === "deadlineInput" || document.activeElement.id === "todoInput"))
+    {
+        addTodo();
+    }
+})
