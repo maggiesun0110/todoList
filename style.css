@@ -87,16 +87,15 @@ badge:hover {
     background-color: rgba(var(--badge-color), 0.3);
 }
 
-/* Deadline-based color variants */
-badge.due-soon {
+badge.high {
     --badge-color: 255, 107, 107; 
 }
 
-badge.due-today {
+badge.medium {
     --badge-color: 255, 193, 7; /* gold for today */
 }
 
-badge.due-later {
+badge.low {
     --badge-color: 76, 175, 80; /* green for future */
 }
 

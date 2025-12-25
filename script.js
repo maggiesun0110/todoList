@@ -57,6 +57,37 @@ window.nextList = function(){
     showList();
 }
 
+function getDeadlineForPriorityColor(deadline)
+{
+    const today = new Date();
+    const deadlineDate = new Date(deadline);
+    const diffDays = (deadlineDate - today) / (1000 * 60 * 60 * 24);
+
+    if(diffDays < 2) return "high";
+    if(diffDays < 4) return "medium";
+    return "low";
+}
+
+function getDeadlineForPriorityDays(deadline)
+{
+    if(deadline === "") return "no";
+    const today = new Date();
+    const deadlineDate = new Date(deadline);
+    const diffDays = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
+
+    return diffDays;
+}
+
+function formatDeadline(deadline)
+{
+    if(deadline === "") return "";
+    const deadlineDate = new Date(deadline);
+    const month = deadlineDate.toLocaleDateString('en-US', { month: 'short' });
+    const day = deadlineDate.getDate();
+    const weekday = deadlineDate.toLocaleDateString('en-US', { weekday: 'short' });
+    return `${month} ${day}, ${weekday}`;
+}
+
 function showList(){
     taskArea.innerHTML = "";
 
@@ -70,9 +101,10 @@ function showList(){
         const del = document.createElement("button");
         const deadlineSpan = document.createElement("p");
         
-        deadlineSpan.textContent = todo.deadline;
+        deadlineSpan.textContent = formatDeadline(todo.deadline);
         //do priority based on date later and style later
-        priority.textContent = "⚠︎";
+        priority.textContent = `⚠︎ ${getDeadlineForPriorityDays(todo.deadline)} days`;
+        priority.className = getDeadlineForPriorityColor(todo.deadline);
         span.textContent = todo.text;
         del.textContent = "del"
         del.onclick = function() {
