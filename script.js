@@ -1,8 +1,6 @@
 /*
 ==== TODO ====
 - add edit func
-- add deadline functionality
-- add priority symbol
 - add motivation functionality
 */
 
