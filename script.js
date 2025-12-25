@@ -1,6 +1,5 @@
 /*
 ==== TODO ====
-- add delete func
 - add edit func
 - add deadline functionality
 - add priority symbol
@@ -68,15 +67,21 @@ function showList(){
         const li = document.createElement("li");
         const span = document.createElement("span");
         const priority = document.createElement("badge");
+        const del = document.createElement("button");
         const deadlineSpan = document.createElement("p");
         
         deadlineSpan.textContent = todo.deadline;
         //do priority based on date later and style later
         priority.textContent = "⚠︎";
         span.textContent = todo.text;
+        del.textContent = "del"
+        del.onclick = function() {
+            delTodo(todos.indexOf(todo));
+        };
 
         li.appendChild(span);
         li.appendChild(priority);
+        li.appendChild(del);
         li.appendChild(deadlineSpan);
         taskArea.appendChild(li);
     })
@@ -93,6 +98,11 @@ window.addTodo = function(){
     lists[currListIndex].todos.push({text: text, done: false, deadline: deadline});
     deadlineInput.value = "";
     todoInput.value = "";
+    showList();
+}
+
+window.delTodo = function(todoIndex){
+    lists[currListIndex].todos.splice(todoIndex, 1);
     showList();
 }
 

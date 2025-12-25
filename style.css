@@ -65,10 +65,39 @@ input[type = "checkbox"]{
   padding: 0.5rem;
   border-radius: 1rem;
   margin: 0.5rem;
+  gap: 1rem;
 }
 
 badge, p{
     margin: 0.5rem;
+}
+
+badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 3000px;
+    --badge-color: 255, 200, 20; 
+    background-color: rgba(var(--badge-color), 0.15);
+    border: 1px solid rgba(var(--badge-color), 0.5);
+    box-shadow: 0 0 12px rgba(var(--badge-color), 0.5);
+    font-size: 0.9rem;
+    transition: all 200ms ease;
+}
+
+badge:hover {
+    background-color: rgba(var(--badge-color), 0.3);
+}
+
+/* Deadline-based color variants */
+badge.due-soon {
+    --badge-color: 255, 107, 107; 
+}
+
+badge.due-today {
+    --badge-color: 255, 193, 7; /* gold for today */
+}
+
+badge.due-later {
+    --badge-color: 76, 175, 80; /* green for future */
 }
 
 #taskArea li:hover {
@@ -76,15 +105,53 @@ badge, p{
 }
 
 #taskArea li span {
-  flex: 1;
-  cursor: pointer;
-  padding: 0.5rem;
-} 
+    flex: 1;
+    cursor: pointer;
+    padding: 0.5rem;
+    min-width: 0; 
+}
+
+#taskArea button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 0;
+    opacity: 0;
+    padding-left: 0;
+    padding-right: 0;
+    transition: max-width 250ms cubic-bezier(.2,.8,.2,1), opacity 160ms ease;
+    box-sizing: border-box;
+    font-size: 0.9rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 3000px;
+    background-color: rgba(255, 107, 107, 0.2);
+    border: 1px solid rgba(255, 107, 107, 0.5);
+    box-shadow: 0 0 12px rgba(255, 107, 107, 0.5);
+    color: #ff6b6b;
+    cursor: pointer;
+}
+
+#taskArea button:hover {
+    background-color: #ed9191;
+}
+
+#taskArea li:hover button {
+    max-width: 6rem;
+    opacity: 1;
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+    visibility: visible;
+    background-color: rgba(255, 107, 107, 0.3);
+}
 
 button{
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
     border-radius: 999px;
     border: none;
     padding: 0.5em 1em;
@@ -93,10 +160,12 @@ button{
     box-shadow: 2px 2px 8px #0d0d0d, -2px -2px 8px rgba(255, 255, 255, 0.1);
     color: #eaeaea;
     cursor: pointer;
+    transition: all 200ms ease;
 }
 
 button:hover{
     background-color: #2c2f36;
+    box-shadow: 2px 2px 8px #0d0d0d, -2px -2px 8px rgba(255, 255, 255, 0.1), 0 0 12px rgba(255, 255, 255, 0.2);
 }
 
 
