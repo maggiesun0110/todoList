@@ -1,7 +1,7 @@
 /*
 ==== TODO ====
-- add motivation functionality
 - fix the styling of edit and delete
+- memory
 */
 
 
