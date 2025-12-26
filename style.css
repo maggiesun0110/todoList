@@ -110,7 +110,7 @@ badge.low {
     min-width: 0; 
 }
 
-#taskArea button {
+.delBtn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -121,7 +121,7 @@ badge.low {
     opacity: 0;
     padding-left: 0;
     padding-right: 0;
-    transition: max-width 250ms cubic-bezier(.2,.8,.2,1), opacity 160ms ease;
+    transition: width 250ms cubic-bezier(.2,.8,.2,1), opacity 200ms ease;
     box-sizing: border-box;
     font-size: 0.9rem;
     padding: 0.25rem 0.75rem;
@@ -133,17 +133,55 @@ badge.low {
     cursor: pointer;
 }
 
-#taskArea button:hover {
-    background-color: #ed9191;
+.delBtn:hover {
+    background-color: rgba(255, 107, 107, 0.4);
+    box-shadow: 0 0 10px rgba(255, 107, 107, 0.8), 0 0 18px rgba(255, 107, 107, 0.5);
 }
 
-#taskArea li:hover button {
+#taskArea li:hover .delBtn {
     max-width: 6rem;
     opacity: 1;
     padding-left: 0.75em;
     padding-right: 0.75em;
     visibility: visible;
     background-color: rgba(255, 107, 107, 0.3);
+}
+
+.editBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 0;
+    opacity: 0;
+    padding-left: 0;
+    padding-right: 0;
+    transition: width 250ms cubic-bezier(.2,.8,.2,1), opacity 200ms ease;
+    box-sizing: border-box;
+    font-size: 0.9rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 3000px;
+    background-color: rgba(100, 149, 237, 0.2);
+    border: 1px solid rgba(100, 149, 237, 0.5);
+    box-shadow: 0 0 12px rgba(100, 149, 237, 0.5);
+    color: #6495ed;
+    cursor: pointer;
+}
+
+.editBtn:hover {
+    background-color: rgba(100, 149, 237, 0.4);
+    box-shadow: 0 0 10px rgba(100, 149, 237, 0.8), 0 0 18px rgba(100, 149, 237, 0.5);
+}
+
+#taskArea li:hover .editBtn {
+    max-width: 6rem;
+    opacity: 1;
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+    visibility: visible;
+    background-color: rgba(100, 149, 237, 0.3);
 }
 
 button{
