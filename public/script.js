@@ -3,55 +3,55 @@
 - fix the styling of edit and delete
 - memory
 */
+let listH2;
+let taskArea;
 
 
-let listH2 = document.getElementById("listName");
-let taskArea = document.getElementById("taskArea");
+window.addEventListener("DOMContentLoaded", () => {
+  listH2 = document.getElementById("listName");
+  taskArea = document.getElementById("taskArea");
 
-let lists = [
-    {
-       name: "school",
-       todos: []
-    },
-    {
-        name: "personal", 
-        todos: []
-    },
-    {
-        name: "locked out", 
-        todos: []
-    }
-];
+  showList();
+});
 
-let currListIndex = 0;
+async function getCurrentList(){
+    const res = await fetch("http://localhost:3000/api/list");
+    return res.json();
+}
 
-showList();
-
-window.addNewList = function(){
+window.addNewList = async function(){
     const name = prompt("enter new list name:");
 
     if(!name || name.trim() === "") return;
 
-    lists.push({name: name, todos: []});
+    await fetch("http://localhost:3000/api/list", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name })
+    });
 
     showList();
 }
 
-window.deleteList = function(){
-    lists.splice(currListIndex, 1);
-    if (currListIndex >= lists.length){
-        currListIndex = lists.length - 1;
-    }
+window.deleteList = async function(){
+    await fetch(`http://localhost:3000/api/list`, {
+        method: "DELETE"
+    });
+
     showList();
 }
 
-window.previousList = function(){
-    currListIndex = (currListIndex - 1 + lists.length) % lists.length;
-    showList()
+window.previousList = async function(){
+    await fetch("http://localhost:3000/api/list/prev", {
+        method: "POST"
+    });
+    showList();
 }
 
-window.nextList = function(){
-    currListIndex = (currListIndex+1) % lists.length;
+window.nextList = async function(){
+    await fetch("http://localhost:3000/api/list/next", {
+        method: "POST"
+    });
     showList();
 }
 
@@ -86,13 +86,14 @@ function formatDeadline(deadline)
     return `${month} ${day}, ${weekday}`;
 }
 
-function showList(){
+async function showList(){
+    const data = await getCurrentList();
+    const todos = data.list.todos;
+
+    listH2.textContent = data.list.name;
     taskArea.innerHTML = "";
 
-    const todos = lists[currListIndex].todos;
-    listH2.textContent = lists[currListIndex].name;
-
-    todos.forEach((todo) => {
+    todos.forEach((todo, index) => {
         const li = document.createElement("li");
         const span = document.createElement("span");
         const edit = document.createElement("button");
@@ -106,9 +107,8 @@ function showList(){
         priority.className = getDeadlineForPriorityColor(todo.deadline);
         span.textContent = todo.text;
         del.textContent = "del"
-        del.onclick = function() {
-            delTodo(todos.indexOf(todo));
-        };
+        del.onclick = () => delTodo(index);
+        edit.onclick = () => editTodo(index, span);
         del.className = "delBtn";
 
         edit.textContent = "✎";
@@ -126,65 +126,62 @@ function showList(){
     })
 }
 
-window.addTodo = function(){
-    let todoInput = document.getElementById("todoInput");
-    let deadlineInput = document.getElementById("deadlineInput");
+window.addTodo = async function(){
+    const todoInput = document.getElementById("todoInput");
+    const deadlineInput = document.getElementById("deadlineInput");
+
     const text = todoInput.value.trim();
     const deadline = deadlineInput.value.trim();
 
-    if(text === "") return;
+    if (text === "") return;
 
-    lists[currListIndex].todos.push({text: text, done: false, deadline: deadline});
-    deadlineInput.value = "";
+    await fetch("http://localhost:3000/api/todo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, deadline })
+    });
+
     todoInput.value = "";
+    deadlineInput.value = "";
+
     showList();
 }
 
-window.delTodo = function(todoIndex){
-    lists[currListIndex].todos.splice(todoIndex, 1);
+window.delTodo = async function(todoIndex){
+    await fetch(`http://localhost:3000/api/todo/${todoIndex}`, {
+        method: "DELETE"
+    });
+
     showList();
 }
-
-window.editTodo = function(todoIndex, spanElement){
-    const todo = lists[currListIndex].todos[todoIndex];
-    
-    // Create input for todo text
+window.editTodo = async function(todoIndex, spanElement) {
     const textInput = document.createElement("input");
     textInput.type = "text";
-    textInput.value = todo.text;
-    textInput.style.flex = "1";
-    textInput.style.width = "fit-content";
-    textInput.style.marginRight = "0.5rem";
-    
-    //span with input
+    textInput.value = spanElement.textContent;
+
     spanElement.replaceWith(textInput);
-    
-    //txt input
     textInput.focus();
     textInput.select();
-    
-    const saveTodo = function() {
+
+    const saveTodo = async () => {
         const newText = textInput.value.trim();
-        
-        if(newText === "") {
-            todo.text = todo.text;
-        } else {
-            todo.text = newText;
-        }
+        if (newText === "") return showList();
+
+        await fetch(`http://localhost:3000/api/todo/${todoIndex}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: newText })
+        });
+
         showList();
     };
-    
-    // Save on Enter key
-    textInput.addEventListener("keydown", function(e) {
-        if(e.key === "Enter") {
-            saveTodo();
-        }
+
+    textInput.addEventListener("keydown", e => {
+        if (e.key === "Enter") saveTodo();
     });
-    
-    
-    // Save on blur
+
     textInput.addEventListener("blur", saveTodo);
-}
+};
 
 window.motivateMe = function(){
     const motivations = [
@@ -197,7 +194,8 @@ window.motivateMe = function(){
         "you got this! just do the thing you've been putting off",
         "imagine how accomplished you'll feel after finishing your tasks",
         "stop procrastinating and start dominating your to-do list",
-        "your future self will thank you for the work you do today"
+        "your future self will thank you for the work you do today",
+        "seriously, just do it. it's not that hard.",
     ]
 
     const randomIndex = Math.floor(Math.random() * motivations.length);
