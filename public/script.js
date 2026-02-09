@@ -1,15 +1,23 @@
 /*
 ==== TODO ====
-- fix the styling of edit and delete
-- memory
+- auto update order based on deadline
+- sort by time
 */
 let listH2;
 let taskArea;
+let urgImportList;
+let notUrgImportList;
+let urgNotImportList;
+let notUrgNotImportList;
 
 
 window.addEventListener("DOMContentLoaded", () => {
   listH2 = document.getElementById("listName");
   taskArea = document.getElementById("taskArea");
+  urgImportList = document.getElementById("urgImportList");
+  notUrgImportList = document.getElementById("notUrgImportList");
+  urgNotImportList = document.getElementById("urgNotImportList");
+  notUrgNotImportList = document.getElementById("notUrgNotImportList");
 
   showList();
 });
@@ -55,36 +63,6 @@ window.nextList = async function(){
     showList();
 }
 
-function getDeadlineForPriorityColor(deadline)
-{
-    const today = new Date();
-    const deadlineDate = new Date(deadline);
-    const diffDays = (deadlineDate - today) / (1000 * 60 * 60 * 24);
-
-    if(diffDays < 2) return "high";
-    if(diffDays < 4) return "medium";
-    return "low";
-}
-
-function getDeadlineForPriorityDays(deadline)
-{
-    if(deadline === "") return "no";
-    const today = new Date();
-    const deadlineDate = new Date(deadline);
-    const diffDays = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
-
-    return diffDays;
-}
-
-function formatDeadline(deadline)
-{
-    if(deadline === "") return "";
-    const deadlineDate = new Date(deadline);
-    const month = deadlineDate.toLocaleDateString('en-US', { month: 'short' });
-    const day = deadlineDate.getDate();
-    const weekday = deadlineDate.toLocaleDateString('en-US', { weekday: 'short' });
-    return `${month} ${day}, ${weekday}`;
-}
 
 async function showList(){
     const data = await getCurrentList();
@@ -92,6 +70,11 @@ async function showList(){
 
     listH2.textContent = data.list.name;
     taskArea.innerHTML = "";
+
+    urgImportList.innerHTML = "";
+    notUrgImportList.innerHTML = "";
+    urgNotImportList.innerHTML = "";
+    notUrgNotImportList.innerHTML = "";
 
     todos.forEach((todo, index) => {
         const li = document.createElement("li");
@@ -101,10 +84,10 @@ async function showList(){
         const del = document.createElement("button");
         const deadlineSpan = document.createElement("p");
         
-        deadlineSpan.textContent = formatDeadline(todo.deadline);
+        deadlineSpan.textContent = todo.formattedDeadline;
         //do priority based on date later and style later
-        priority.textContent = `⚠︎ ${getDeadlineForPriorityDays(todo.deadline)} days`;
-        priority.className = getDeadlineForPriorityColor(todo.deadline);
+        priority.textContent = `⚠︎ ${todo.daysLeft} days`;
+        priority.className = todo.priorityColor;
         span.textContent = todo.text;
         del.textContent = "del"
         del.onclick = () => delTodo(index);
@@ -123,6 +106,14 @@ async function showList(){
         li.appendChild(del);
         li.appendChild(deadlineSpan);
         taskArea.appendChild(li);
+
+        if (todo.priorityColor === "high") {
+            urgImportList.innerHTML += `<p>${todo.text}</p>`;
+        } else if (todo.priorityColor === "medium") {
+            urgNotImportList.innerHTML += `<p>${todo.text}</p>`;
+        } else {
+            notUrgNotImportList.innerHTML += `<p>${todo.text}</p>`;
+        }
     })
 }
 

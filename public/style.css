@@ -20,7 +20,7 @@ html{
 body{
     background-color: #1b1e23;
     display: flex;
-    gap: 2rem;
+    gap: 6rem;
     padding: 2rem;
     align-items: flex-start;
 }
@@ -252,9 +252,14 @@ h2{
 
 .eisenhowerBox {
     display: flex;
+    flex-direction: column;
     align-items: center;
     gap: 0.5rem;
     height: 100%;
+    border-radius:30px;
+    padding: 1rem;
+    box-shadow: 2px 2px 8px #0d0d0d, -2px -2px 8px rgba(255, 255, 255, 0.1);
+
 }
 
 @media (max-width: 768px) {

@@ -7,6 +7,9 @@
 //import stuff
 const express = require('express');
 const cors = require('cors');
+const { getDeadlineForPriorityColor } = require('./utils/deadlines');
+const { getDeadlineForPriorityDays } = require('./utils/deadlines');
+const { formatDeadline } = require('./utils/deadlines');
 
 //init app
 const app = express();
@@ -34,15 +37,45 @@ let lists = [
     }
 ];
 
+let eisenhowerMatrix = [
+    {
+        name: "urgent and important",
+        todos: []
+    },
+    {
+        name: "not urgent but important",
+        todos: []   
+    },
+    {
+        name: "urgent but not important",
+        todos: []
+    },
+    {
+        name: "not urgent and not important",
+        todos: []
+    }
+]
+
 let currListIndex = 0;
 
 //get curr list
 app.get("/api/list", (req, res) => {
+  const enrichedTodos = lists[currListIndex].todos.map(todo => ({
+    ...todo,
+    priorityColor: getDeadlineForPriorityColor(todo.deadline),
+    daysLeft: getDeadlineForPriorityDays(todo.deadline),
+    formattedDeadline: formatDeadline(todo.deadline)
+  }));
+
   res.json({
     currListIndex,
-    list: lists[currListIndex]
+    list: {
+      ...lists[currListIndex],
+      todos: enrichedTodos
+    }
   });
 });
+
 
 //switch lists
 app.post("/api/list/next", (req, res) => {
@@ -62,6 +95,26 @@ app.post("/api/todo", (req, res) => {
         deadline,
         done: false
     });
+    
+    if(getDeadlineForPriorityColor(deadline) === "high" || currListIndex == 0){
+        eisenhowerMatrix[0].todos.push({
+            text,
+            deadline,
+            done: false
+        });
+    } else if(getDeadlineForPriorityColor(deadline) === "medium"){
+        eisenhowerMatrix[2].todos.push({
+            text,
+            deadline,
+            done: false
+        });
+    } else {
+        eisenhowerMatrix[3].todos.push({
+            text,
+            deadline,
+            done: false
+        });
+    }
     res.sendStatus(200);
 });
 
@@ -90,13 +143,13 @@ app.patch("/api/todo/:index", (req, res) => {
   res.sendStatus(200);
 });
 
+//addlist
 app.post("/api/list", (req, res) => {
     const { name } = req.body;
     lists.push({ name, todos: []});
     currListIndex = lists.length-1;
     res.sendStatus(200);
 })
-
 
 app.listen(3000, () => {
   console.log("Server running on http://localhost:3000");
