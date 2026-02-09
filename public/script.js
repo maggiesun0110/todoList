@@ -2,6 +2,7 @@
 ==== TODO ====
 - auto update order based on deadline
 - sort by time
+- style eisenhower
 */
 let listH2;
 let taskArea;
