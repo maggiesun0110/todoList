@@ -67,15 +67,39 @@ app.get("/api/list", (req, res) => {
     formattedDeadline: formatDeadline(todo.deadline)
   }));
 
+  const eisenhower = {
+    high: [],
+    medium: [],
+    low: []
+  };
+
+    enrichedTodos.forEach(todo => {
+    if (todo.priorityColor === "high" || currListIndex == 0) {
+        eisenhower.high.push(todo);
+    } else if (todo.priorityColor === "medium") {
+        eisenhower.medium.push(todo);
+    } else {
+        eisenhower.low.push(todo);
+    }
+    });
+
   res.json({
     currListIndex,
     list: {
       ...lists[currListIndex],
       todos: enrichedTodos
-    }
+    },
+    eisenhower
   });
 });
 
+//addlist
+app.post("/api/list", (req, res) => {
+    const { name } = req.body;
+    lists.push({ name, todos: []});
+    currListIndex = lists.length-1;
+    res.sendStatus(200);
+})
 
 //switch lists
 app.post("/api/list/next", (req, res) => {
@@ -87,44 +111,8 @@ app.post("/api/list/prev", (req, res) => {
   res.sendStatus(200);
 });
 
-//add todo
-app.post("/api/todo", (req, res) => {
-    const { text, deadline } = req.body;
-    lists[currListIndex].todos.push({
-        text,
-        deadline,
-        done: false
-    });
-    
-    if(getDeadlineForPriorityColor(deadline) === "high" || currListIndex == 0){
-        eisenhowerMatrix[0].todos.push({
-            text,
-            deadline,
-            done: false
-        });
-    } else if(getDeadlineForPriorityColor(deadline) === "medium"){
-        eisenhowerMatrix[2].todos.push({
-            text,
-            deadline,
-            done: false
-        });
-    } else {
-        eisenhowerMatrix[3].todos.push({
-            text,
-            deadline,
-            done: false
-        });
-    }
-    res.sendStatus(200);
-});
 
-//delete todo
-app.delete("/api/todo/:index", (req, res) => {
-    lists[currListIndex].todos.splice(req.params.index, 1);
-    res.sendStatus(200);
-});
-
-//delete
+//delete list
 app.delete("/api/list", (req, res) => {
   if (lists.length <= 1) {
     return res.status(400).json({ error: "Cannot delete last list" });
@@ -136,20 +124,29 @@ app.delete("/api/list", (req, res) => {
   res.sendStatus(200);
 });
 
-//edit
+//add todo
+app.post("/api/todo", (req, res) => {
+    const { text, deadline } = req.body;
+    lists[currListIndex].todos.push({
+        text,
+        deadline,
+        done: false
+    });
+    res.sendStatus(200);
+});
+
+//delete todo
+app.delete("/api/todo/:index", (req, res) => {
+    lists[currListIndex].todos.splice(req.params.index, 1);
+    res.sendStatus(200);
+});
+
+//edit todo
 app.patch("/api/todo/:index", (req, res) => {
   const { text } = req.body;
   lists[currListIndex].todos[req.params.index].text = text;
   res.sendStatus(200);
 });
-
-//addlist
-app.post("/api/list", (req, res) => {
-    const { name } = req.body;
-    lists.push({ name, todos: []});
-    currListIndex = lists.length-1;
-    res.sendStatus(200);
-})
 
 app.listen(3000, () => {
   console.log("Server running on http://localhost:3000");
