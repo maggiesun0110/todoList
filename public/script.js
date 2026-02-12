@@ -3,6 +3,40 @@
 - auto update order based on deadline
 - sort by time
 - style eisenhower
+
+====== IMPROVEMENTS =======
+maybe one day improve this
+
+1. user does something
+- frontend sends req
+2, backend updates data into database and returns udpated
+3, re fetch or update local state
+
+lists = [
+  {
+    id: 1,
+    name: "school",
+    todos: [
+      {
+        id: 101,
+        text: "study math",
+        deadline: "2026-02-20",
+        done: false
+      }
+    ]
+  }
+]
+
+GET    /api/lists
+POST   /api/lists
+DELETE /api/lists/:id
+
+GET    /api/lists/:id/todos
+POST   /api/lists/:id/todos
+PATCH  /api/todos/:id
+DELETE /api/todos/:id
+no currlist variable
+server is stateless
 */
 let listH2;
 let taskArea;
@@ -42,7 +76,7 @@ window.addNewList = async function(){
     showList();
 }
 
-window.deleteList = async function(){
+window.deleteList = async function(listIndex){
     await fetch(`http://localhost:3000/api/list`, {
         method: "DELETE"
     });
@@ -107,14 +141,16 @@ async function showList(){
         li.appendChild(del);
         li.appendChild(deadlineSpan);
         taskArea.appendChild(li);
+    })
 
-        if (todo.priorityColor === "high") {
-            urgImportList.innerHTML += `<p>${todo.text}</p>`;
-        } else if (todo.priorityColor === "medium") {
-            urgNotImportList.innerHTML += `<p>${todo.text}</p>`;
-        } else {
-            notUrgNotImportList.innerHTML += `<p>${todo.text}</p>`;
-        }
+    data.eisenhower.high.forEach(todo => {
+        urgImportList.innerHTML += `<p>${todo.text}</p>`;
+    });
+    data.eisenhower.medium.forEach(todo => {
+        notUrgImportList.innerHTML += `<p>${todo.text}</p>`;
+    })
+    data.eisenhower.low.forEach(todo => {
+        notUrgNotImportList.innerHTML += `<p>${todo.text}</p>`;
     })
 }
 
